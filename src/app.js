@@ -1,3 +1,5 @@
+'use strict'
+
 const express = require('express')
 const morgan = require('morgan')
 const helmet = require('helmet')
@@ -10,12 +12,15 @@ app.use(helmet())
 app.use(compression())
 
 // init db
+require('./db/init.mongodb')
+
+require('./helpers/check.connect').checkOverload()
 
 // init routes
 app.get('/', (req, res, next) => {
     return res.status(200).json({
         message: 'Welcome',
-        metadata: 'HelloWorld'.repeat(1000000)
+        metadata: 'HelloWorld'
     })
 })
 
