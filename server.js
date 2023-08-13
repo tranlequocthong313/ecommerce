@@ -1,8 +1,9 @@
 'use strict'
 
 const app = require('./src/app')
+const config = require('./src/configs/config')
 
-const PORT = 3055
+const PORT = config.APP.PORT
 
 const server = app.listen(PORT, () => {
     console.log(`WSV eCommerce start with port ${PORT}`)

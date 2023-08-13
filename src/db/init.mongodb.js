@@ -1,8 +1,9 @@
 'use strict'
 
 const mongoose = require('mongoose')
+const { DB } = require('../configs/config')
 
-const URI = 'mongodb://127.0.0.1:27017/ecommerce'
+const URI = `mongodb://${DB.SERVER}:${DB.PORT}/${DB.NAME}`
 
 class Database {
     constructor() {
