@@ -1,15 +1,6 @@
 'use strict'
 
-const StatusCode = {
-    OK: 200,
-    CREATED: 201,
-}
-
-const ReasonStatusCode = {
-    OK: 'Success',
-    CREATED: 'Created',
-}
-
+const { SuccessReasonStatusCode: ReasonStatusCode, SuccessStatusCode: StatusCode } = require('../utils/constants')
 
 class SuccessResponse {
     constructor({ message = ReasonStatusCode.OK, statusCode = StatusCode.OK, metadata = {} }) {

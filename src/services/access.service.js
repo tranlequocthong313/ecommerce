@@ -9,15 +9,15 @@ const { createTokenPair } = require('../auth/authUtils')
 const { ConflictError, ErrorResponse, BadRequestError, UnauthorizedError } = require('../core/error.response')
 const { findByEmail } = require('./shop.service')
 const { generatePrivateAndPublicKey } = require('../utils/keyGenerator')
-
-const RoleShop = {
-    SHOP: 'SHOP',
-    WRITER: 'WRITER',
-    EDITOR: 'EDITOR',
-    ADMIN: 'ADMIN',
-}
+const { RoleShop } = require('../utils/constants')
 
 class AccessService {
+    static logout = async (keyStore) => {
+        const delKey = await KeyTokenService.removeKeyById(keyStore._id)
+        console.log(`DelKey::`, delKey)
+        return delKey
+    }
+
     static login = async ({ email, password, refreshtoken = null }) => {
         const shop = await findByEmail({ email })
         if (!shop) {

@@ -2,26 +2,25 @@
 
 const { ForbiddenError } = require('../core/error.response')
 const apiKeyService = require('../services/apiKey.service')
+const { asyncHandler } = require('../utils')
+const { HEADER } = require('../utils/constants')
 
-const HEADER = {
-    API_KEY: 'x-api-key',
-    AUTHORIZATION: 'authorization'
-}
+const apiKey = asyncHandler(
+    async (req, res, next) => {
+        const key = req.headers[HEADER.API_KEY]?.toString()
+        if (!key) {
+            throw new ForbiddenError('Not found api key')
+        }
 
-const apiKey = async (req, res, next) => {
-    const key = req.headers[HEADER.API_KEY]?.toString()
-    if (!key) {
-        throw new ForbiddenError('Not found api key')
+        const objKey = await apiKeyService.findById(key)
+        if (!objKey) {
+            throw new ForbiddenError('Invalid api key')
+        }
+
+        req.key = objKey
+        return next()
     }
-
-    const objKey = await apiKeyService.findById(key)
-    if (!objKey) {
-        throw new ForbiddenError('Invalid api key')
-    }
-
-    req.key = objKey
-    return next()
-}
+)
 
 const permission = (permission) => {
     return (req, res, next) => {

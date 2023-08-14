@@ -1,18 +1,6 @@
 'use strict'
 
-const StatusCode = {
-    FORBIDDDEN: 403,
-    CONFLICT: 409,
-    BAD_REQUEST: 400,
-    UNAUTHORIZED: 401
-}
-
-const ReasonStatusCode = {
-    FORBIDDDEN: 'Forbidden error',
-    CONFLICT: 'Conflict error',
-    BAD_REQUEST: 'Bad request error',
-    UNAUTHORIZED: 'Unauthorized'
-}
+const { ErrorReasonStatusCode: ReasonStatusCode, ErrorStatusCode: StatusCode } = require('../utils/constants')
 
 class ErrorResponse extends Error {
     constructor(message, status) {
