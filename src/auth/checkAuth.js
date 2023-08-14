@@ -1,6 +1,6 @@
 'use strict'
 
-const { ForbiddenRequestError } = require('../core/error.response')
+const { ForbiddenError } = require('../core/error.response')
 const apiKeyService = require('../services/apiKey.service')
 
 const HEADER = {
@@ -11,12 +11,12 @@ const HEADER = {
 const apiKey = async (req, res, next) => {
     const key = req.headers[HEADER.API_KEY]?.toString()
     if (!key) {
-        throw new ForbiddenRequestError('Not found api key')
+        throw new ForbiddenError('Not found api key')
     }
 
     const objKey = await apiKeyService.findById(key)
     if (!objKey) {
-        throw new ForbiddenRequestError('Invalid api key')
+        throw new ForbiddenError('Invalid api key')
     }
 
     req.key = objKey
@@ -26,11 +26,11 @@ const apiKey = async (req, res, next) => {
 const permission = (permission) => {
     return (req, res, next) => {
         if (!req.key.permissions) {
-            throw new ForbiddenRequestError('Permission denied')
+            throw new ForbiddenError('Permission denied')
         }
         console.log('permissions::', req.key.permissions)
         if (!req.key.permissions.includes(permission)) {
-            throw new ForbiddenRequestError('Permission denied')
+            throw new ForbiddenError('Permission denied')
         }
         return next()
     }

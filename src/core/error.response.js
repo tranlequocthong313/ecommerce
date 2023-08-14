@@ -19,7 +19,7 @@ class ErrorResponse extends Error {
     }
 }
 
-class ConflictRequestError extends ErrorResponse {
+class ConflictError extends ErrorResponse {
     constructor(message = ReasonStatusCode.CONFLICT, statusCode = StatusCode.CONFLICT) {
         super(message, statusCode)
     }
@@ -31,15 +31,15 @@ class BadRequestError extends ErrorResponse {
     }
 }
 
-class ForbiddenRequestError extends ErrorResponse {
+class ForbiddenError extends ErrorResponse {
     constructor(message = ReasonStatusCode.FORBIDDDEN, statusCode = StatusCode.FORBIDDDEN) {
         super(message, statusCode)
     }
 }
 
 module.exports = {
-    ConflictRequestError,
+    ConflictError,
     BadRequestError,
     ErrorResponse,
-    ForbiddenRequestError
+    ForbiddenError
 }

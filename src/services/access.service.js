@@ -6,7 +6,7 @@ const shopModel = require('../models/shop.model')
 const KeyTokenService = require('./keyToken.service')
 const { lodash } = require('../utils')
 const { createTokenPair } = require('../auth/authUtils')
-const { ConflictRequestError, ErrorResponse } = require('../core/error.response')
+const { ConflictError, ErrorResponse } = require('../core/error.response')
 
 const RoleShop = {
     SHOP: 'SHOP',
@@ -19,7 +19,7 @@ class AccessService {
     static signUp = async ({ name, email, password }) => {
         const shop = await shopModel.findOne({ email }).lean()
         if (shop) {
-            throw new ConflictRequestError('Shop is already signed up!')
+            throw new ConflictError('Shop is already signed up!')
         }
 
         password = await bcrypt.hash(password, 10)
@@ -44,11 +44,8 @@ class AccessService {
             console.log(`Created token successfully::`, tokens)
 
             return {
-                code: 201,
-                metadata: {
-                    shop: lodash.getIntoData({ fildes: ['_id', 'name', 'email'], obj: newShop }),
-                    tokens
-                }
+                shop: lodash.getIntoData({ fildes: ['_id', 'name', 'email'], obj: newShop }),
+                tokens
             }
         }
     }
