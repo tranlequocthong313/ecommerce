@@ -14,6 +14,5 @@ const configs = {
 }
 
 const env = process.env.NODE_ENV || 'development'
-const config = configs[env]
 
-module.exports = config
+module.exports = configs[env]

@@ -8,6 +8,8 @@ const compression = require('compression')
 const app = express()
 
 // init middlewares
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(morgan('dev'))
 app.use(helmet())
 app.use(compression())
@@ -15,15 +17,8 @@ app.use(compression())
 // init db
 require('./db/init.mongodb')
 
-require('./helpers/check.connect').checkOverload()
-
 // init routes
-app.get('/', (req, res, next) => {
-    return res.status(200).json({
-        message: 'Welcome',
-        metadata: 'HelloWorld'
-    })
-})
+app.use('/', require('./routes'))
 
 // handle errors
 
