@@ -5,7 +5,7 @@ const crypto = require('node:crypto')
 const shopModel = require('../models/shop.model')
 const KeyTokenService = require('./keyToken.service')
 const { lodash } = require('../utils')
-const { createTokenPair } = require('../auth/auth')
+const { createTokenPair } = require('../auth/authUtils')
 
 const RoleShop = {
     SHOP: 'SHOP',
