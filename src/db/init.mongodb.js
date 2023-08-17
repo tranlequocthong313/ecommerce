@@ -16,7 +16,7 @@ class Database {
 
         mongoose.connect(URI, { maxPoolSize: 50 })
             .then(_ => console.log('Connected to Mongodb'))
-            .catch(e => console.log(`Error::: ${e}`))
+            .catch(e => console.log(`Error Mongodb::: ${e}`))
     }
 
     static getInstance() {

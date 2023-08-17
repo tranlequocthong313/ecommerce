@@ -11,18 +11,16 @@ const { generatePrivateAndPublicKey } = require('../utils/keyGenerator')
 const { RoleShop } = require('../utils/constants')
 
 class AccessService {
-    static handleRefreshToken = async (refreshToken) => {
-        const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken)
-        if (foundToken) {
-            await KeyTokenService.deleteByUserId(foundToken.user)
+    static handleRefreshToken = async ({
+        refreshToken,
+        keyStore,
+        userId
+    }) => {
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteByUserId(userId)
             throw new ForbiddenError('Something went wrong! Please login again')
         }
 
-        const keyStore = await KeyTokenService.findByRefreshToken(refreshToken)
-        if (!keyStore) {
-            throw new UnauthorizedError()
-        }
-        const { userId } = await verifyJWT(refreshToken, keyStore.privateKey)
         const tokens = await createTokenPair({
             userId
         }, keyStore.publicKey, keyStore.privateKey)
@@ -40,7 +38,6 @@ class AccessService {
 
     static logout = async (keyStore) => {
         const delKey = await KeyTokenService.deleteById(keyStore._id)
-        console.log(`DelKey::`, delKey)
         return delKey
     }
 
@@ -88,7 +85,6 @@ class AccessService {
         if (newShop) {
             const { privateKey, publicKey } = generatePrivateAndPublicKey()
 
-            console.log({ privateKey, publicKey })
             const keyStore = await KeyTokenService.createKeyToken({ userId: newShop._id, publicKey, privateKey })
             if (!keyStore) {
                 throw new ErrorResponse()
@@ -97,7 +93,6 @@ class AccessService {
             const tokens = await createTokenPair({
                 userId: newShop._id
             }, publicKey, privateKey)
-            console.log(`Created token successfully::`, tokens)
 
             return {
                 shop: lodash.getIntoData({ fildes: ['_id', 'name', 'email'], obj: newShop }),
