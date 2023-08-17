@@ -1,13 +1,13 @@
 'use strict'
 
-const { ForbiddenError } = require('../core/error.response')
+const { ForbiddenError, ErrorResponse } = require('../core/error.response')
 const apiKeyService = require('../services/apiKey.service')
-const { asyncHandler } = require('../utils')
+const asyncHandler = require('../utils/asyncHandler')
 const { HEADER } = require('../utils/constants')
 
 const apiKey = asyncHandler(
     async (req, res, next) => {
-        const key = req.headers[HEADER.API_KEY]?.toString()
+        const key = req.headers[HEADER.API_KEY]
         if (!key) {
             throw new ForbiddenError('Not found api key')
         }
@@ -25,7 +25,7 @@ const apiKey = asyncHandler(
 const permission = (permission) => {
     return (req, res, next) => {
         if (!req.key.permissions) {
-            throw new ForbiddenError('Permission denied')
+            throw new ErrorResponse()
         }
         console.log('permissions::', req.key.permissions)
         if (!req.key.permissions.includes(permission)) {

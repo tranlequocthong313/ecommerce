@@ -1,6 +1,6 @@
-const asyncHandler = (fn) => {
+const asyncHandler = (handler) => {
     return (req, res, next) => {
-        fn(req, res, next).catch(next)
+        handler(req, res, next).catch(next)
     }
 }
 

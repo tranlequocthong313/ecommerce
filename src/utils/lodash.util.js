@@ -2,7 +2,7 @@
 
 const _ = require('lodash')
 
-const getIntoData = ({ fildes = [], obj = {} }) => {
+const omitFields = ({ fildes = [], obj = {} }) => {
     return _.pick(obj, fildes)
 }
 
@@ -11,6 +11,6 @@ const cleanData = (obj) => {
 }
 
 module.exports = {
-    getIntoData,
+    omitFields,
     cleanData
 }

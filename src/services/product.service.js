@@ -4,15 +4,18 @@ const { product, clothing, electronic } = require('../models/product.model')
 const { BadRequestError } = require('../core/error.response')
 
 class ProductService {
+    static productClasses = {}
+
+    static addProductClass(type, className) {
+        this.productClasses[type] = className
+    }
+
     static async create(type, payload) {
-        switch (type) {
-            case 'Electronics':
-                return new Electronics(payload).create()
-            case 'Clothing':
-                return new Clothing(payload).create()
-            default:
-                throw new BadRequestError(`Invalid Product Type ${type}`)
+        const productClass = this.productClasses[type]
+        if (!productClass) {
+            throw new BadRequestError(`Invalid Product Type ${type}`)
         }
+        return new productClass(payload).create()
     }
 }
 
@@ -77,5 +80,8 @@ class Electronics extends Product {
         return newProduct
     }
 }
+
+ProductService.addProductClass('Clothing', Clothing)
+ProductService.addProductClass('Electronics', Electronics)
 
 module.exports = ProductService
