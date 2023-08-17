@@ -4,10 +4,10 @@ const { SuccessReasonStatusCode: ReasonStatusCode, SuccessStatusCode: StatusCode
 const { cleanData } = require('../utils/lodash.util')
 
 class SuccessResponse {
-    constructor({ message = ReasonStatusCode.OK, statusCode = StatusCode.OK, metadata = {} }) {
+    constructor({ message = ReasonStatusCode.OK, statusCode = StatusCode.OK, data = {} }) {
         this.message = message
         this.status = statusCode
-        this.metadata = metadata
+        this.data = data
     }
 
     send(res, headers = {}) {
@@ -16,14 +16,14 @@ class SuccessResponse {
 }
 
 class OkResponse extends SuccessResponse {
-    constructor({ message = ReasonStatusCode.OK, metadata }) {
-        super({ message, statusCode: StatusCode.OK, metadata })
+    constructor({ message = ReasonStatusCode.OK, data }) {
+        super({ message, statusCode: StatusCode.OK, data })
     }
 }
 
 class CreatedResponse extends SuccessResponse {
-    constructor({ message = ReasonStatusCode.CREATED, metadata, options = {} }) {
-        super({ message, statusCode: StatusCode.CREATED, metadata })
+    constructor({ message = ReasonStatusCode.CREATED, data, options = {} }) {
+        super({ message, statusCode: StatusCode.CREATED, data })
         this.options = options
     }
 }

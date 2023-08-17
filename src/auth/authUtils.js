@@ -4,13 +4,14 @@ const jwt = require('jsonwebtoken')
 const { UnauthorizedError, BadRequestError } = require('../core/error.response')
 const KeyTokenService = require('../services/keyToken.service')
 const { HEADER } = require('../utils/constants')
+const { JWT } = require('../configs/config')
 
 const createTokenPair = async (payload, publicKey, privateKey) => {
     const accessToken = await jwt.sign(payload, publicKey, {
-        expiresIn: '2 days'
+        expiresIn: JWT.ACCESS_EXPIRES_IN
     })
     const refreshToken = await jwt.sign(payload, privateKey, {
-        expiresIn: '7 days'
+        expiresIn: JWT.REFRESH_EXPIRES_IN
     })
     return { accessToken, refreshToken }
 }
@@ -59,12 +60,7 @@ const checkToken = (type = 'access') => {
     }
 }
 
-const verifyJWT = async (token, keySecret) => {
-    return await jwt.verify(token, keySecret)
-}
-
 module.exports = {
     createTokenPair,
     checkToken,
-    verifyJWT
 }

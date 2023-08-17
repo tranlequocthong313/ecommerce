@@ -1,14 +1,14 @@
 'use strict'
 
-const bcrypt = require('bcrypt')
 const shopModel = require('../models/shop.model')
 const KeyTokenService = require('./keyToken.service')
-const { lodash } = require('../utils')
-const { createTokenPair, verifyJWT } = require('../auth/authUtils')
+const lodash = require('../utils/lodash.util')
+const { createTokenPair } = require('../auth/authUtils')
 const { ConflictError, ErrorResponse, BadRequestError, UnauthorizedError, ForbiddenError } = require('../core/error.response')
 const { findByEmail } = require('./shop.service')
 const { generatePrivateAndPublicKey } = require('../utils/keyGenerator')
 const { RoleShop } = require('../utils/constants')
+const bcrypt = require('bcrypt')
 
 class AccessService {
     static handleRefreshToken = async ({
@@ -41,7 +41,7 @@ class AccessService {
         return delKey
     }
 
-    static login = async ({ email, password, refreshtoken = null }) => {
+    static login = async ({ email, password }) => {
         const shop = await findByEmail({ email })
         if (!shop) {
             throw new BadRequestError('Shop does not exist')
@@ -65,7 +65,7 @@ class AccessService {
         })
 
         return {
-            shop: lodash.getIntoData({ fildes: ['_id', 'name', 'email'], obj: shop }),
+            shop: lodash.omitFields({ fildes: ['_id', 'name', 'email'], obj: shop }),
             tokens
         }
     }
@@ -76,16 +76,21 @@ class AccessService {
             throw new ConflictError('Shop is already signed up!')
         }
 
-        password = await bcrypt.hash(password, 10)
-
         const newShop = await shopModel.create({
-            name, email, password, roles: [RoleShop.SHOP]
+            name,
+            email,
+            password,
+            roles: [RoleShop.SHOP]
         })
 
         if (newShop) {
             const { privateKey, publicKey } = generatePrivateAndPublicKey()
 
-            const keyStore = await KeyTokenService.createKeyToken({ userId: newShop._id, publicKey, privateKey })
+            const keyStore = await KeyTokenService.createKeyToken({
+                userId: newShop._id,
+                publicKey,
+                privateKey
+            })
             if (!keyStore) {
                 throw new ErrorResponse()
             }
@@ -95,7 +100,10 @@ class AccessService {
             }, publicKey, privateKey)
 
             return {
-                shop: lodash.getIntoData({ fildes: ['_id', 'name', 'email'], obj: newShop }),
+                shop: lodash.omitFields({
+                    fildes: ['_id', 'name', 'email'],
+                    obj: newShop
+                }),
                 tokens
             }
         }

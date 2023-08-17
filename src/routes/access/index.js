@@ -2,7 +2,7 @@
 
 const { Router } = require('express')
 const accessController = require('../../controllers/access.controller')
-const { asyncHandler } = require('../../utils')
+const asyncHandler = require('../../utils/asyncHandler')
 const { checkToken } = require('../../auth/authUtils')
 const router = Router()
 

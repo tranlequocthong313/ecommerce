@@ -1,6 +1,7 @@
 'use strict'
 
-const { model, Schema, Types } = require('mongoose')
+const { model, Schema } = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const MODEL_NAME = 'Shop'
 const COLLECTION_NAME = 'Shops'
@@ -36,6 +37,10 @@ const shopSchema = new Schema({
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
+})
+
+shopSchema.pre('save', async function () {
+    this.password = await bcrypt.hash(this.password, 10)
 })
 
 module.exports = model(MODEL_NAME, shopSchema)
