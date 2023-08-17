@@ -1,19 +1,45 @@
 'use strict'
 
 const bcrypt = require('bcrypt')
-const crypto = require('node:crypto')
 const shopModel = require('../models/shop.model')
 const KeyTokenService = require('./keyToken.service')
 const { lodash } = require('../utils')
-const { createTokenPair } = require('../auth/authUtils')
-const { ConflictError, ErrorResponse, BadRequestError, UnauthorizedError } = require('../core/error.response')
+const { createTokenPair, verifyJWT } = require('../auth/authUtils')
+const { ConflictError, ErrorResponse, BadRequestError, UnauthorizedError, ForbiddenError } = require('../core/error.response')
 const { findByEmail } = require('./shop.service')
 const { generatePrivateAndPublicKey } = require('../utils/keyGenerator')
 const { RoleShop } = require('../utils/constants')
 
 class AccessService {
+    static handleRefreshToken = async (refreshToken) => {
+        const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken)
+        if (foundToken) {
+            await KeyTokenService.deleteByUserId(foundToken.user)
+            throw new ForbiddenError('Something went wrong! Please login again')
+        }
+
+        const keyStore = await KeyTokenService.findByRefreshToken(refreshToken)
+        if (!keyStore) {
+            throw new UnauthorizedError()
+        }
+        const { userId } = await verifyJWT(refreshToken, keyStore.privateKey)
+        const tokens = await createTokenPair({
+            userId
+        }, keyStore.publicKey, keyStore.privateKey)
+
+        await keyStore.updateOne({
+            $set: { refreshToken: tokens.refreshToken },
+            $addToSet: { refreshTokensUsed: refreshToken }
+        })
+
+        return {
+            userId,
+            tokens
+        }
+    }
+
     static logout = async (keyStore) => {
-        const delKey = await KeyTokenService.removeKeyById(keyStore._id)
+        const delKey = await KeyTokenService.deleteById(keyStore._id)
         console.log(`DelKey::`, delKey)
         return delKey
     }
