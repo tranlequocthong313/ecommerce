@@ -53,7 +53,11 @@ const clothingSchema = new Schema({
     },
     material: {
         type: String
-    }
+    },
+    shop: {
+        type: Schema.Types.ObjectId,
+        ref: 'Shops'
+    },
 }, {
     collection: 'Clothes',
     timestamps: true
@@ -69,7 +73,11 @@ const electronicSchema = new Schema({
     },
     color: {
         type: String
-    }
+    },
+    shop: {
+        type: Schema.Types.ObjectId,
+        ref: 'Shops'
+    },
 }, {
     collection: 'Electronics',
     timestamps: true

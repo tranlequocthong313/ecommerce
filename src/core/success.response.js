@@ -1,6 +1,7 @@
 'use strict'
 
 const { SuccessReasonStatusCode: ReasonStatusCode, SuccessStatusCode: StatusCode } = require('../utils/constants')
+const { cleanData } = require('../utils/lodash.util')
 
 class SuccessResponse {
     constructor({ message = ReasonStatusCode.OK, statusCode = StatusCode.OK, metadata = {} }) {
@@ -10,7 +11,7 @@ class SuccessResponse {
     }
 
     send(res, headers = {}) {
-        return res.status(this.status).json(this)
+        return res.status(this.status).json(cleanData(this))
     }
 }
 
