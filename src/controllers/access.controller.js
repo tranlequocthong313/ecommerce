@@ -7,13 +7,15 @@ class AccessController {
     handleRefreshToken = async (req, res, next) => {
         new CreatedResponse({
             message: 'Refreshed tokens successfully!',
-            metadata: await AccessService.handleRefreshToken(req.body.refreshToken)
+            metadata: await AccessService.handleRefreshToken({
+                refreshToken: req.refreshToken,
+                keyStore: req.keyStore,
+                userId: req.user.userId
+            })
         }).send(res)
     }
 
     logout = async (req, res, next) => {
-        console.log(`[P]::logout::`, req.keyStore)
-
         new OkResponse({
             message: 'Log out successfully!',
             metadata: await AccessService.logout(req.keyStore)
@@ -21,8 +23,6 @@ class AccessController {
     }
 
     login = async (req, res, next) => {
-        console.log(`[P]::login::`, req.body)
-
         new CreatedResponse({
             message: 'Log in successfully!',
             metadata: await AccessService.login(req.body)
@@ -30,8 +30,6 @@ class AccessController {
     }
 
     signUp = async (req, res, next) => {
-        console.log(`[P]::signUp::`, req.body)
-
         new CreatedResponse({
             message: 'Signed up successfully!',
             metadata: await AccessService.signUp(req.body)
