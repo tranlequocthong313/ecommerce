@@ -7,7 +7,10 @@ class ProdcutController {
     create = async (req, res, next) => {
         new CreatedResponse({
             message: 'Created new product successfully!',
-            metadata: await ProdcutService.create(req.body.type, req.body)
+            metadata: await ProdcutService.create(req.body.type, {
+                ...req.body,
+                shop: req.user.userId
+            })
         }).send(res)
     }
 }
