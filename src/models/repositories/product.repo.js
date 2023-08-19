@@ -1,6 +1,7 @@
 'use strict'
 
 const { product } = require('../product.model')
+const lodash = require('../../utils/lodash.util')
 
 const findByQuery = async ({ query, limit, skip }) => {
     return await product.find(query)
@@ -47,10 +48,33 @@ const findProductByKeyword = async (keyword) => {
         .lean()
 }
 
+const findProductsWithPaging = async ({ filter, limit, page, sort, select = [] }) => {
+    const skip = (page - 1) * limit
+    const sortBy = sort === 'ctime' ? { id: -1 } : { id: 1 } // ctime sort by the newest products
+
+    return await product.find(filter)
+        .select(lodash.getSelectObjFromSelectArr(select))
+        .sort(sortBy)
+        .skip(skip)
+        .limit(limit)
+        .lean()
+}
+
+const findProduct = async ({ productId, unSelect = [] }) => {
+    return await product.findOne({
+        _id: productId,
+        isPublished: true
+    })
+        .select(lodash.getUnSelectObjFromSelectArr(unSelect))
+        .lean()
+}
+
 module.exports = {
     findByQuery,
     publishProductByShop,
     unPublishProductByShop,
-    findProductByKeyword
+    findProductByKeyword,
+    findProductsWithPaging,
+    findProduct
 }
 
