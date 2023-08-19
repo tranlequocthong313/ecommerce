@@ -74,6 +74,22 @@ class ProdcutController {
             data: await ProductService.searchProductsByKeyword(req.query.k)
         }).send(res)
     }
+
+    findProductsWithPaging = async (req, res, next) => {
+        console.log(`find products query:::`, req.query)
+        new OkResponse({
+            message: 'Find products with paging',
+            data: await ProductService.findProductsWithPaging(req.query)
+        }).send(res)
+    }
+
+    findProductById = async (req, res, next) => {
+        console.log(`find product by id:::`, req.params)
+        new OkResponse({
+            message: 'Find product by id',
+            data: await ProductService.findProduct(req.params.id)
+        }).send(res)
+    }
 }
 
 module.exports = new ProdcutController()

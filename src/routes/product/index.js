@@ -7,6 +7,8 @@ const productController = require('../../controllers/product.controller')
 const router = Router()
 
 router.get('/search', asyncHandler(productController.searchProductByKeyword))
+router.get('/:id', asyncHandler(productController.findProductById))
+router.get('', asyncHandler(productController.findProductsWithPaging))
 
 router.use(asyncHandler(checkToken('access')))
 router.post('', asyncHandler(productController.create))

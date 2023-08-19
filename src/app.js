@@ -27,6 +27,9 @@ app.use((req, res, next) => {
     next(error)
 })
 app.use((err, req, res, next) => {
+    if (!err.status || err.status === 500) {
+        console.error(err)
+    }
     const statusCode = err.status || 500
     return res.status(statusCode).json({
         status: 'error',

@@ -52,6 +52,33 @@ class ProductService {
     static async searchProductsByKeyword(keyword) {
         return await productRepository.findProductByKeyword(keyword)
     }
+
+    static async findProductsWithPaging({
+        filter,
+        limit = 50,
+        page = 1,
+        sort = 'ctime'
+    }) {
+        filter = {
+            ...filter,
+            isPublished: true,
+            isDraft: false
+        }
+        return await productRepository.findProductsWithPaging({
+            filter,
+            limit,
+            page,
+            sort,
+            select: ['name', 'price', 'thumb']
+        })
+    }
+
+    static async findProduct(id) {
+        return await productRepository.findProduct({
+            productId: id,
+            unSelect: ['__v', 'variation']
+        })
+    }
 }
 
 class Product {
