@@ -3,6 +3,7 @@
 const { product, clothing, electronic } = require('../models/product.model')
 const { BadRequestError } = require('../core/error.response')
 const productRepository = require('../models/repositories/product.repo')
+const lodash = require('../utils/lodash.util')
 
 class ProductService {
     static productClasses = {}
@@ -79,6 +80,14 @@ class ProductService {
             unSelect: ['__v', 'variation']
         })
     }
+
+    static async update(type, productId, payload) {
+        const productClass = this.productClasses[type]
+        if (!productClass) {
+            throw new BadRequestError(`Invalid Product Type ${type}`)
+        }
+        return new productClass(payload).update(productId)
+    }
 }
 
 class Product {
@@ -105,6 +114,14 @@ class Product {
     async create(productId) {
         return await product.create({ ...this, _id: productId })
     }
+
+    async update(productId, payload) {
+        return await productRepository.updateProductById({
+            productId,
+            payload,
+            model: product
+        })
+    }
 }
 
 class Clothing extends Product {
@@ -122,6 +139,18 @@ class Clothing extends Product {
             throw new BadRequestError('create new Product error')
         }
         return newProduct
+    }
+
+    async update(productId) {
+        const update = lodash.cleanData(this)
+        if (update.attributes) {
+            await productRepository.updateProductById({
+                productId,
+                payload: lodash.parseNestedObj(update.attributes),
+                model: clothing
+            })
+        }
+        return super.update(productId, lodash.parseNestedObj(update))
     }
 }
 
