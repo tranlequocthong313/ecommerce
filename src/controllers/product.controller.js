@@ -16,6 +16,13 @@ class ProdcutController {
         }).send(res)
     }
 
+    update = async (req, res, next) => {
+        new OkResponse({
+            message: 'Updated product successfully!',
+            data: await ProdcutService.update(req.params.type, req.params.id, req.body)
+        }).send(res)
+    }
+
     getAllDraftsForShop = async (req, res, next) => {
         const prods = await ProdcutService.findAllDraftsForShop({ shop: req.user.userId })
         let message = 'Get all drafts for shop successfully!'

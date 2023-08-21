@@ -12,6 +12,7 @@ router.get('', asyncHandler(productController.findProductsWithPaging))
 
 router.use(asyncHandler(checkToken('access')))
 router.post('', asyncHandler(productController.create))
+router.patch('/:type/:id', asyncHandler(productController.update))
 
 router.get('/drafts', asyncHandler(productController.getAllDraftsForShop))
 router.get('/published', asyncHandler(productController.getAllPublishedForShop))
