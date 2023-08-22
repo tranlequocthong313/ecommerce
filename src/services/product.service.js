@@ -4,6 +4,7 @@ const { product, clothing, electronic } = require('../models/product.model')
 const { BadRequestError } = require('../core/error.response')
 const productRepository = require('../models/repositories/product.repo')
 const lodash = require('../utils/lodash.util')
+const { insertInventory } = require('../models/repositories/inventory.repo')
 
 class ProductService {
     static productClasses = {}
@@ -112,7 +113,18 @@ class Product {
     }
 
     async create(productId) {
-        return await product.create({ ...this, _id: productId })
+        const newProd = await product.create({
+            ...this,
+            _id: productId
+        })
+        if (newProd) {
+            await insertInventory({
+                productId,
+                shopId: this.shop,
+                stock: this.quantity
+            })
+        }
+        return newProd
     }
 
     async update(productId, payload) {
@@ -169,6 +181,18 @@ class Electronics extends Product {
             throw new BadRequestError('create new Product error')
         }
         return newProduct
+    }
+
+    async update(productId) {
+        const update = lodash.cleanData(this)
+        if (update.attributes) {
+            await productRepository.updateProductById({
+                productId,
+                payload: lodash.parseNestedObj(update.attributes),
+                model: electronic
+            })
+        }
+        return super.update(productId, lodash.parseNestedObj(update))
     }
 }
 
